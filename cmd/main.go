@@ -28,6 +28,7 @@ func main() {
 
 	http.HandleFunc("/book", reservationHandler.BookReservation)
     http.HandleFunc("/test-auth", handlers.TestUserAuth)
+    http.HandleFunc("/venue/config", handlers.GetVenueConfig)
 
 	log.Printf("Server starting on port %s", cfg.Port)
 	log.Fatal(http.ListenAndServe(":"+cfg.Port, nil))

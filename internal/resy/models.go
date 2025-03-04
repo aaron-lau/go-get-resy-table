@@ -23,3 +23,21 @@ type ReservationResponse struct {
 	ReservationID string `json:"reservation_id,omitempty"`
 	Error         string `json:"error,omitempty"`
 }
+
+type VenueConfigRequest struct {
+    VenueID string `json:"venue_id"`
+}
+
+type VenueConfigResponse struct {
+    Meta struct {
+        Code    int    `json:"code"`
+        Message string `json:"message"`
+    } `json:"meta"`
+    Data struct {
+        Name        string `json:"name"`
+        ID          int    `json:"id"`
+        URL         string `json:"url"`
+        Config      map[string]interface{} `json:"config"`
+        // Add more fields as needed
+    } `json:"data"`
+}

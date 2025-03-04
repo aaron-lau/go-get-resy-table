@@ -37,6 +37,16 @@ test-auth-direct:
 		-H "x-resy-auth-token: ${RESY_AUTH_KEY}" \
 		-H "x-resy-universal-auth: ${RESY_AUTH_KEY}" | jq '.'
 
+
+test-venue-config:
+	curl -v "http://localhost:8080/venue/config?venue_id=49338" | jq '.'
+
+test-venue-config-direct:
+	curl -v "https://api.resy.com/2/config?venue_id=49338" \
+		-H "Authorization: ResyAPI api_key=\"${RESY_API_KEY}\"" \
+		-H "x-resy-auth-token: ${RESY_AUTH_KEY}" \
+		-H "x-resy-universal-auth: ${RESY_AUTH_KEY}" | jq '.'
+
 # Run with environment variables
 run-with-env:
 	RESY_API_KEY=${RESY_API_KEY} RESY_AUTH_KEY=${RESY_AUTH_KEY} $(GO) run cmd/main.go
