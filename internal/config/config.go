@@ -2,7 +2,9 @@
 package config
 
 import (
-	"os"
+    "log"
+
+    "github.com/spf13/viper"
 )
 
 type Config struct {
@@ -13,17 +15,21 @@ type Config struct {
 }
 
 func Load() (*Config, error) {
-    return &Config{
-        ResyAPIKey:  os.Getenv("RESY_API_KEY"),
-        ResyAuthKey: os.Getenv("RESY_AUTH_KEY"),
-        Port:       getEnvOrDefault("PORT", "8080"),
-        Debug:       os.Getenv("DEBUG") == "true",
-    }, nil
-}
+    viper.SetConfigFile(".env")
+    // Set up Viper to read environment variables
+    viper.AutomaticEnv()
 
-func getEnvOrDefault(key, defaultValue string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
-	}
-	return defaultValue
+    
+    if viper.GetBool("DEBUG") {
+        log.Printf("📋 Configuration:")
+        log.Printf("API Key: %s", viper.GetString("RESY_API_KEY"))
+        log.Printf("Auth Token: %s", viper.GetString("RESY_AUTH_TOKEN"))
+    }
+
+    return &Config{
+        ResyAPIKey:  viper.GetString("RESY_API_KEY"),
+        ResyAuthKey: viper.GetString("RESY_AUTH_TOKEN"),
+        Port:        viper.GetString("PORT"),
+        Debug:       viper.GetBool("DEBUG"),
+    }, nil
 }

@@ -27,6 +27,7 @@ func main() {
 	reservationHandler := handlers.NewReservationHandler(resyService)
 
 	http.HandleFunc("/book", reservationHandler.BookReservation)
+    http.HandleFunc("/test-auth", handlers.TestUserAuth)
 
 	log.Printf("Server starting on port %s", cfg.Port)
 	log.Fatal(http.ListenAndServe(":"+cfg.Port, nil))

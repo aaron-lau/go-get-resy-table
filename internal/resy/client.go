@@ -6,7 +6,8 @@ import (
     "fmt"
     "log"
     "net/http"
-    "time"
+    
+    httputils "github.com/aaron-lau/go-get-resy-table/pkg/http"
 )
 
 type Client struct {
@@ -26,44 +27,39 @@ func NewClient(apiKey, authKey string, debug bool) *Client {
 }
 
 func (c *Client) BookReservation(req *ReservationRequest) (*ReservationResponse, error) {
-    startTime := time.Now()
-    log.Printf("🔄 Starting reservation request for %s", req.RestaurantName)
-
     reqBody, err := json.Marshal(req)
     if err != nil {
         log.Printf("❌ Error marshaling request: %v", err)
         return nil, fmt.Errorf("failed to marshal request: %w", err)
     }
 
-    headers := map[string]string{
-        "Authorization":     fmt.Sprintf("ResyAPI api_key=\"%s\"", c.apiKey),
-        "x-resy-auth-token": c.authKey,
-        "Content-Type":      "application/json",
+    log.Printf("📤 Sending request to Resy API...")
+	log.Printf("%s", reqBody)
+	log.Printf("%s", httputils.Req{})
+    resp, statusCode, err := httputils.Get("https://api.resy.com/2/user", &httputils.Req{})
+    
+    if err != nil {
+        log.Printf("❌ Error making reservation request: %v", err)
+        return nil, err
     }
 
-    // Pretty print the request details
-    log.Printf("📝 Request Details:")
-    log.Printf("  Restaurant: %s", req.RestaurantName)
-    log.Printf("  Date: %s", req.Date)
-    log.Printf("  Time: %s", req.Time)
-    log.Printf("  Party Size: %d", req.PartySize)
-    log.Printf("  Request Body: %s", string(reqBody))
-    log.Printf("  Headers: %v", headers)
+    // Log the raw response for debugging
+    log.Printf("📥 Received response (status %d): %s", statusCode, string(resp))
 
-    // TODO: Make actual API call
-    // For now, return mock response with simulated delay
-    time.Sleep(500 * time.Millisecond) // Simulate API call
-
-    response := &ReservationResponse{
-        Success:       true,
-        ReservationID: fmt.Sprintf("mock-%s-%s-%s", req.RestaurantName, req.Date, time.Now().Format("150405")),
+    if statusCode != 200 {
+        return &ReservationResponse{
+            Success: false,
+            Error:   fmt.Sprintf("unexpected status code: %d - %s", statusCode, string(resp)),
+        }, nil
     }
 
-    duration := time.Since(startTime)
-    log.Printf("✅ Reservation completed in %v", duration)
-    log.Printf("📎 Reservation ID: %s", response.ReservationID)
+    var response ReservationResponse
+    if err := json.Unmarshal(resp, &response); err != nil {
+        log.Printf("❌ Failed to unmarshal response: %v\nResponse body: %s", err, string(resp))
+        return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+    }
 
-    return response, nil
+    return &response, nil
 }
 
 func (c *Client) debugLog(format string, v ...interface{}) {

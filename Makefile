@@ -24,10 +24,18 @@ clean:
 
 # Test with curl
 curl-test:
-	curl -X POST http://localhost:8080/book \
+	curl -v -X POST http://localhost:8080/book \
 		-H "Content-Type: application/json" \
-		-H "X-Resy-Auth-Token: ${RESY_AUTH_KEY}" \
-		-d '{"restaurant_name": "Test Restaurant", "date": "2024-02-14", "time": "19:00", "party_size": 2}'
+		-d '{}'
+
+test-auth:
+	curl -v http://localhost:8080/test-auth | jq '.'
+
+test-auth-direct:
+	curl -v https://api.resy.com/2/user \
+		-H "Authorization: ResyAPI api_key=\"${RESY_API_KEY}\"" \
+		-H "x-resy-auth-token: ${RESY_AUTH_KEY}" \
+		-H "x-resy-universal-auth: ${RESY_AUTH_KEY}" | jq '.'
 
 # Run with environment variables
 run-with-env:
