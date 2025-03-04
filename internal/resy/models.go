@@ -29,15 +29,28 @@ type VenueConfigRequest struct {
 }
 
 type VenueConfigResponse struct {
-    Meta struct {
-        Code    int    `json:"code"`
-        Message string `json:"message"`
-    } `json:"meta"`
-    Data struct {
-        Name        string `json:"name"`
-        ID          int    `json:"id"`
-        URL         string `json:"url"`
-        Config      map[string]interface{} `json:"config"`
-        // Add more fields as needed
-    } `json:"data"`
+    LeadTimeInDays int `json:"lead_time_in_days"`
+    Venue struct {
+        Config struct {
+            AllowBypassPaymentMethod int `json:"allow_bypass_payment_method"`
+            AllowMultipleResys      int `json:"allow_multiple_resys"`
+            EnableInvite           int `json:"enable_invite"`
+            EnableResypay          int `json:"enable_resypay"`
+            HospitalityIncluded    int `json:"hospitality_included"`
+        } `json:"config"`
+        Contact struct {
+            PhoneNumber string `json:"phone_number"`
+        } `json:"contact"`
+        MaxPartySize int    `json:"max_party_size"`
+        MinPartySize int    `json:"min_party_size"`
+        Name         string `json:"name"`
+    } `json:"venue"`
+}
+
+type SimplifiedVenueConfig struct {
+    VenueName      string `json:"venue_name"`
+    LeadTimeInDays int    `json:"lead_time_in_days"`
+    MaxPartySize   int    `json:"max_party_size"`
+    MinPartySize   int    `json:"min_party_size"`
+    PhoneNumber    string `json:"phone_number"`
 }
